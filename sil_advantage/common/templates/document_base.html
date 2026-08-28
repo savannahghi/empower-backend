@@ -1,0 +1,154 @@
+{% load humanize %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+  <link rel="stylesheet" href="/static/print.css" />
+  <style>
+    .header-line {
+      background-image: url("/static/img/boxshadow.png");
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/static/fonts/Montserrat-Black.ttf');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/static/fonts/Monteserrat-SemiBold.ttf');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/static/fonts/Montserrat-Regular.ttf');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/static/fonts/Monteserrat-Light.ttf');
+      font-weight: 300;
+      font-style: normal;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- This holds all the content -->
+  {% block content %}
+  <div class="top-area">
+    <!-- This is the top most block in the document -->
+    {% block top_area %}
+    <!-- top left logo area [UNCHANGING] -->
+    {% block logo %}
+    {% if use_cluster_details %}
+    <img id="logo" class="top-left" src="{{ cluster_logo }}" alt="Logo" />
+    {% else %}
+    <img id="logo" class="top-left" src="{{ org_logo }}" alt="Logo" />
+    {% endif %}
+    {% endblock %}
+    <div class="top-right">
+      <!-- top right cluster details [UNCHANGING]-->
+      {% block org_details %}
+      {% if use_cluster_details %}
+      <div class="document-header-details">
+        {{ cluster_name }}
+      </div>
+
+      <div class="document-header-details">
+        {{ cluster_physical_address }}
+      </div>
+
+      <div class="document-header-details">
+        {{ cluster_phone_number }}
+      </div>
+
+      <div class="document-header-details">
+        {{ cluster_email_address }}
+      </div>
+
+      {% if org_web_address %}
+      <div class="document-header-details">
+        {{ org_web_address }}
+      </div>
+
+      {% endif %}
+      {% else %}
+      <!-- top right organization details [UNCHANGING]-->
+      <div class="document-header-details">
+        {{ org_name }}
+      </div>
+
+      <div class="document-header-details">
+        {{ org_physical_address }}
+      </div>
+
+      <div class="document-header-details">
+        {{ org_phone_number }}
+      </div>
+
+      <div class="document-header-details">
+        {{ org_email_address }}
+      </div>
+
+      {% if org_web_address %}
+      <div class="document-header-details">
+        {{ org_web_address }}
+      </div>
+
+      {% endif %}
+      {% endif %}
+      {% endblock %}
+    </div>
+    {% endblock %}
+  </div>
+
+  <div class="document-title">
+    <!-- the document title with grey background -->
+    {% block document_title %} {% endblock %}
+
+    <div class="header-line" style="width: 120%; color: white; margin-left: -50px">
+      s
+    </div>
+  </div>
+  <div class="document-header">
+    <!-- the block right below the title, it has two sections -->
+    {% block document_header %}
+    <div class="col-1-2">
+      <!-- the left part with the org unit/store details -->
+      {% block header_left %} {% endblock %}
+    </div>
+    <div class="col-1-2">
+      <!-- the right part with the document details [CHANGING] -->
+      {% block header_right %} {% endblock %}
+    </div>
+    {% endblock %}
+  </div>
+
+  <div class="table-area">
+    <!-- the section with the table with document lines/product list -->
+    {% block table_area %} {% endblock %}
+  </div>
+
+  <div class="signatures">
+    {% block signatures %}
+    <div class="message">{% block created_by %} {% endblock %}</div>
+    {% endblock %}
+  </div>
+
+  <br />
+  <br />
+
+  <div class="message">{% block message %} {% endblock %}</div>
+  {% endblock %}
+</body>
+
+</html>

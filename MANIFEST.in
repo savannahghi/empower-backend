@@ -1,0 +1,14 @@
+include README.md
+include CHANGELOG.md
+include tox.ini
+include sil_advantage/templates/*.html
+include sil_advantage/common/templates/**/**/*.html
+include sil_advantage/common/templates/**/**/*.txt
+include sil_advantage/templates/rest_framework/*.html
+include sil_advantage/*/templates/*.html
+include sil_advantage/*/templates/*.mjml
+include sil_advantage/common/static/bootstrap/css/*.css
+include sil_advantage/common/static/*.css
+include sil_advantage/common/static/*.ttf
+include bin/*.py
+graft sil_advantage/static

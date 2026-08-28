@@ -1,0 +1,136 @@
+#!/usr/bin/env sh
+
+set -eux
+
+helm repo add chartmuseum $CHARTMUSEUM_DOMAIN --username $CHARTMUSEUM_USERNAME --password $CHARTMUSEUM_PASSWORD
+
+helm repo update
+
+helm pull chartmuseum/advantage-backend --untar
+
+helm upgrade \
+    --install \
+    --atomic \
+    --debug \
+    --create-namespace \
+    --namespace="${DEPLOY_ENV_NAMESPACE}" \
+    --set app.replicaCount="${DEPLOY_ENV_APP_REPLICA_COUNT}" \
+    --set app.container.image.name="${DEPLOY_ENV_CONTAINER_REGISTRY_PATH}:${CI_COMMIT_SHORT_SHA}" \
+    --set app.container.env.environment="DEPLOY_ENV" \
+    --set app.container.env.apiHost="${DEPLOY_ENV_API_HOST}" \
+    --set app.container.env.advantageFrontendUrl="${DEPLOY_ENV_ADVANTAGE_FRONTEND_URL}" \
+    --set app.container.env.secretKey="${DEPLOY_ENV_SECRET_KEY}" \
+    --set app.container.env.authserverDomain="${DEPLOY_ENV_AUTHSERVER_DOMAIN}" \
+    --set app.container.env.authserverClientSecret="${DEPLOY_ENV_AUTHSERVER_CLIENT_SECRET}" \
+    --set app.container.env.authserverApiClientId="${DEPLOY_ENV_AUTHSERVER_API_CLIENT_ID}" \
+    --set app.container.env.authserverApiTokenUrl="${DEPLOY_ENV_AUTHSERVER_API_TOKEN_URL}" \
+    --set app.container.env.authserverApiHost="${DEPLOY_ENV_AUTHSERVER_API_HOST}" \
+    --set app.container.env.authserverApiScheme="${DEPLOY_ENV_AUTHSERVER_API_SCHEME}" \
+    --set app.container.env.ravenDsn="${DEPLOY_ENV_RAVEN_DSN}" \
+    --set app.container.env.sentryCollectDefaultPii="${DEPLOY_ENV_SENTRY_COLLECT_DEFAULT_PII}" \
+    --set app.container.env.serverEmail="${DEPLOY_ENV_SERVER_EMAIL}" \
+    --set app.container.env.userEmail="${DEPLOY_ENV_USER_EMAIL}" \
+    --set app.container.env.userPassword="${DEPLOY_ENV_USER_PASSWORD}" \
+    --set app.container.env.siteName="${DEPLOY_ENV_SITE_NAME}" \
+    --set app.container.env.oauth2Key="${DEPLOY_ENV_OAUTH2_KEY}" \
+    --set app.container.env.oauth2Secret="${DEPLOY_ENV_OAUTH2_SECRET}" \
+    --set app.container.env.db.host="${DEPLOY_ENV_DATABASE_HOST}" \
+    --set app.container.env.db.user="${DEPLOY_ENV_DATABASE_USER}" \
+    --set app.container.env.db.password="${DEPLOY_ENV_DATABASE_PASSWORD}" \
+    --set app.container.env.db.name="${DEPLOY_ENV_DATABASE_NAME}" \
+    --set app.container.env.db.instanceHostIP="${DEPLOY_ENV_DATABASE_INSTANCE_HOST_IP}" \
+    --set app.container.env.pgBouncerPoolMode="${DEPLOY_ENV_PGBOUNCER_POOL_MODE}" \
+    --set app.container.env.pgBouncerAddress="${DEPLOY_ENV_PGBOUNCER_ADDRESS}" \
+    --set app.container.env.socialAuthRedirectIsHttps="${DEPLOY_ENV_SOCIAL_AUTH_REDIRECT_IS_HTTPS}" \
+    --set app.container.env.googleProjectLocation="${DEPLOY_ENV_GOOGLE_PROJECT_LOCATION}" \
+    --set app.container.env.googleProjectId="${DEPLOY_ENV_GOOGLE_PROJECT_ID}" \
+    --set app.container.env.queueName="${DEPLOY_ENV_QUEUE_NAME}" \
+    --set app.container.env.defaultFromEmail="${DEPLOY_ENV_DEFAULT_FROM_EMAIL}" \
+    --set app.container.env.chargemasterHost="${DEPLOY_ENV_CHARGEMASTER_HOST}" \
+    --set app.container.env.chargemasterTokenUrl="${DEPLOY_ENV_CHARGEMASTER_TOKEN_URL}" \
+    --set app.container.env.chargemasterClientId="${DEPLOY_ENV_CHARGEMASTER_CLIENT_ID}" \
+    --set app.container.env.chargemasterClientSecret="${DEPLOY_ENV_CHARGEMASTER_CLIENT_SECRET}" \
+    --set app.container.env.chargemasterUsername="${DEPLOY_ENV_CHARGEMASTER_USERNAME}" \
+    --set app.container.env.chargemasterPassword="${DEPLOY_ENV_CHARGEMASTER_PASSWORD}" \
+    --set app.container.env.chargemasterGrantType="${DEPLOY_ENV_CHARGEMASTER_GRANT_TYPE}" \
+    --set app.container.env.chargemasterScheme="${DEPLOY_ENV_CHARGEMASTER_SCHEME}" \
+    --set app.container.env.isHost="${DEPLOY_ENV_IS_HOST}" \
+    --set app.container.env.isTokenUrl="${DEPLOY_ENV_IS_TOKEN_URL}" \
+    --set app.container.env.isClientId="${DEPLOY_ENV_IS_CLIENT_ID}" \
+    --set app.container.env.isClientSecret="${DEPLOY_ENV_IS_CLIENT_SECRET}" \
+    --set app.container.env.isUsername="${DEPLOY_ENV_IS_USERNAME}" \
+    --set app.container.env.isPassword="${DEPLOY_ENV_IS_PASSWORD}" \
+    --set app.container.env.isScheme="${DEPLOY_ENV_IS_SCHEME}" \
+    --set app.container.env.awsKeyId="${DEPLOY_ENV_AWS_KEY_ID}" \
+    --set app.container.env.awsSecret="${DEPLOY_ENV_AWS_SECRET}" \
+    --set app.container.env.whitelistedTestRecipients="${DEPLOY_ENV_WHITELISTED_TEST_RECIPIENTS}" \
+    --set app.container.env.silCommsTransactionalSenderId="${DEPLOY_ENV_SIL_COMMS_TRANSACTIONAL_SENDER_ID}" \
+    --set app.container.env.silCommsPromotionalSenderId="${DEPLOY_ENV_SIL_COMMS_PROMOTIONAL_SENDER_ID}" \
+    --set app.container.env.silCommsBusinessPartnerAppId="${DEPLOY_ENV_SIL_COMMS_BUSINESS_PARTNER_APP_ID}" \
+    --set app.container.env.silCommsApiHost="${DEPLOY_ENV_SIL_COMMS_API_HOST}" \
+    --set app.container.env.silCommsApiScheme="${DEPLOY_ENV_SIL_COMMS_API_SCHEME}" \
+    --set app.container.env.silCommsOauthClientId="${DEPLOY_ENV_SIL_COMMS_OAUTH_CLIENT_ID}" \
+    --set app.container.env.silCommsOauthClientSecret="${DEPLOY_ENV_SIL_COMMS_OAUTH_CLIENT_SECRET}" \
+    --set app.container.env.silCommsUserEmail="${DEPLOY_ENV_SIL_COMMS_USER_EMAIL}" \
+    --set app.container.env.silCommsUserPassword="${DEPLOY_ENV_SIL_COMMS_USER_PASSWORD}" \
+    --set app.container.env.silCommsAuthTokenUrl="${DEPLOY_ENV_SIL_COMMS_AUTH_TOKEN_URL}" \
+    --set app.container.env.erpApiHost="${DEPLOY_ENV_ERP_API_HOST}" \
+    --set app.container.env.erpApiScheme="${DEPLOY_ENV_ERP_API_SCHEME}" \
+    --set app.container.env.erpOauthClientId="${DEPLOY_ENV_ERP_OAUTH_CLIENT_ID}" \
+    --set app.container.env.erpOauthClientSecret="${DEPLOY_ENV_ERP_OAUTH_CLIENT_SECRET}" \
+    --set app.container.env.erpUserEmail="${DEPLOY_ENV_ERP_USER_EMAIL}" \
+    --set app.container.env.erpUserPassword="${DEPLOY_ENV_ERP_USER_PASSWORD}" \
+    --set app.container.env.erpAuthTokenUrl="${DEPLOY_ENV_ERP_AUTH_TOKEN_URL}" \
+    --set app.container.env.syncWithErp="${DEPLOY_ENV_SYNC_WITH_ERP}" \
+    --set app.container.env.transactingSilOrgSladeCode="${DEPLOY_ENV_TRANSACTING_SIL_ORG_SLADE_CODE}" \
+    --set app.container.env.brokerUrl="${DEPLOY_ENV_BROKER_URL}" \
+    --set app.container.env.resultBackend="${DEPLOY_ENV_RESULT_BACKEND}" \
+    --set app.container.env.rabbitMqMetricsEndpoint="${DEPLOY_ENV_RABBITMQ_METRICS_ENDPOINT}" \
+    --set app.container.env.rabbitMqUsername="${DEPLOY_ENV_RABBITMQ_USERNAME}" \
+    --set app.container.env.rabbitMqPassword="${DEPLOY_ENV_RABBITMQ_PASSWORD}" \
+    --set app.container.env.redisUrl="${DEPLOY_ENV_REDIS_DB_URL}" \
+    --set app.container.env.redisTcpAddress="${DEPLOY_ENV_REDIS_TCP_ADDRESS}" \
+    --set app.container.env.statsdHost="${DEPLOY_ENV_STATSD_HOST}" \
+    --set app.container.env.silCacheableEnabled="${DEPLOY_ENV_SIL_CACHEABLE_ENABLED}" \
+    --set app.container.env.silCacheableTtl="${DEPLOY_ENV_SIL_CACHEABLE_TTL}" \
+    --set app.container.env.gsBucketName="${DEPLOY_ENV_GS_BUCKET_NAME}" \
+    --set app.container.env.quintusBackendUrl="${DEPLOY_ENV_QUINTUS_BACKEND_URL}" \
+    --set app.container.env.healthCrmApiUrl="${DEPLOY_ENV_HEALTH_CRM_API_URL}" \
+    --set app.container.env.healthCrmServiceCode="${DEPLOY_ENV_HEALTH_CRM_SERVICE_CODE}" \
+    --set app.container.env.syncWithHealthCrm="${DEPLOY_ENV_SYNC_WITH_HEALTH_CRM}" \
+    --set app.container.env.clinicalServiceUrl="${DEPLOY_ENV_CLINICAL_SERVICE_URL}" \
+    --set app.container.env.syncWithClinicalService="${DEPLOY_ENV_SYNC_WITH_CLINICAL_SERVICE}" \
+    --set app.container.env.shlinkServerUrl="${DEPLOY_ENV_SHLINK_SERVER_URL}" \
+    --set app.container.env.shlinkApiKey="${DEPLOY_ENV_SHLINK_API_KEY}" \
+    --set app.container.env.shlinkCustomDomain="${DEPLOY_ENV_SHLINK_CUSTOM_DOMAIN}" \
+    --set app.container.env.matrixHomeserver="${DEPLOY_ENV_MATRIX_HOME_SERVER}" \
+    --set app.container.env.matrixBotUid="${DEPLOY_ENV_MATRIX_BOT_UID}" \
+    --set app.container.env.matrixBotPassword="${DEPLOY_ENV_MATRIX_BOT_PASSWORD}" \
+    --set app.container.env.matrixSecret="${DEPLOY_ENV_MATRIX_SECRET}" \
+    --set app.container.env.backupOn="${DEPLOY_ENV_BACKUP_ON}" \
+    --set app.container.env.backupMonitoringEmail="${DEPLOY_ENV_BACKUP_MONITORING_EMAIL}" \
+    --set app.container.env.backupPgDumpPath="${DEPLOY_ENV_BACKUP_PG_DUMP_PATH}" \
+    --set app.container.env.backupEncryptionPublicKeyPath="${DEPLOY_ENV_BACKUP_ENCRYPTION_PUBLIC_KEY_PATH}" \
+    --set app.container.env.backupAccessKeyId="${DEPLOY_ENV_BACKUP_ACCESS_KEY_ID}" \
+    --set app.container.env.backupSecretKey="${DEPLOY_ENV_BACKUP_SECRET_KEY}" \
+    --set app.container.env.backupRegion="${DEPLOY_ENV_BACKUP_REGION}" \
+    --set app.container.env.backupBucketName="${DEPLOY_ENV_BACKUP_BUCKET_NAME}" \
+    --set app.container.env.VisitAsyncEnabled="${DEPLOY_ENV_VISIT_ASYNC_ENABLED}" \
+    --set app.container.env.segmentDelayBeforeSendingInstantMessage="${DEPLOY_ENV_SEGMENT_DELAY_BEFORE_SENDING_INSTANT_MESSAGE}" \
+    --set app.container.env.tariffAuthServerHost="${DEPLOY_ENV_TARIFF_AUTH_SERVER_HOST}" \
+    --set app.container.env.tariffAuthServerClientID="${DEPLOY_ENV_TARIFF_AUTH_SERVER_CLIENT_ID}" \
+    --set app.container.env.tariffAuthServerSecretKey="${DEPLOY_ENV_TARIFF_AUTH_SERVER_SECRET_KEY}" \
+    --set app.container.env.tariffAuthServerUserEmail="${DEPLOY_ENV_TARIFF_AUTH_SERVER_USER_EMAIL}" \
+    --set app.container.env.tariffAuthServerUserPassword="${DEPLOY_ENV_TARIFF_AUTH_SERVER_USER_PASSWORD}" \
+    --set app.container.env.tariffAuthServerTokenURL="${DEPLOY_ENV_TARIFF_AUTH_SERVER_TOKEN_URL}" \
+    --set app.container.env.tariffBaseURL="${DEPLOY_ENV_TARIFF_BASE_URL}" \
+    --set celery.workerCount="${DEPLOY_ENV_CELERY_WORKER_COUNT}" \
+    --set networking.issuer.name="letsencrypt-prod" \
+    --set networking.issuer.privateKeySecretRef="letsencrypt-prod" \
+    --set networking.ingress.host="${DEPLOY_ENV_APP_DOMAIN}" \
+    --version="0.1.4" \
+    --wait \
+    --timeout 300s \
+    -f ./advantage-backend/values.yaml \
+    $DEPLOY_ENV_APP_NAME \
+    chartmuseum/advantage-backend

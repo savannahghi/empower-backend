@@ -1,0 +1,136 @@
+{% extends 'document_base.html' %}
+{% load humanize %}
+{% load num_comma_separator %}
+
+{% block document_title %}
+<div class="document-title-text" style="font-weight: 700">
+    {% if total_balance > 0 %}
+        INVOICE ({{ document_number }})
+    {% else %}
+        PAYMENT RECEIPT ({{ document_number }})
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block document_header %}
+<div class="col-1-1-right" style="width:100%;text-align: right;">
+    <span style="text-align: right;" class="fw-semibold">{{ created|date:"g:i A · jS F, Y" }}</span>
+</div>
+<br><br>
+{% block header_left %}
+<div class="col-1-3-left">
+    <div class="col-1-2">
+        <div>Patient name:</div>
+        <div>Patient no:</div>
+        <div>Patient contact:</div>
+    </div>
+    <div class="col-1-2" style="margin-left: -70px">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            {{ patient_name }}<br>
+        </div>
+        {{ patient_number }}<br>
+        {{ patient_contact }}<br>
+    </div>
+</div>
+{% endblock %}
+
+{% block header_right %}
+<div class="col-1-3-right">
+    <div class="col-1-2-left">
+        Payer:<br>
+        Branch:<br>
+        Visit no:<br>
+    </div>
+    <div class="col-1-2-right">
+        {{ payer_name }}<br>
+        {{ branch_name }}<br>
+        {{ visit_number }}<br>
+    </div>
+</div>
+{% endblock %}
+
+{% endblock %}
+
+{% block table_area %}
+<div class="invoice">
+    <div class="invoice-lines">
+        <table class="full-width-table numbered-table" style="width:100%">
+            <thead>
+                <th style="text-align: left; width: 50%;">Item description</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Discount</th>
+                <th style="text-align: right">Total</th>
+            </thead>
+            {% for invoice in invoices %}
+                {% if invoice.lines|length > 0 %}
+                    <tr>
+                        <td colspan="5" style="font-weight: 700">
+                            {% if document_number %}
+                                    {{ invoice.service_point }}
+                            {% else %}
+                                    {{ invoice.service_point }} 
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% for line in invoice.lines %}
+                    <tr>
+                        <td>{{ line.product_name }}</td>
+                        <td>{{ line.original_price|num_comma_separator }}</td>
+                        <td>{{ line.quantity|intcomma }}</td>
+                        <td>{{ line.discount|num_comma_separator }}</td>
+                        <td style="text-align: right">{{ line.total|num_comma_separator }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+</div>
+<br><br>
+<div class="invoice-totals" style="width:100%;">
+    <table class="half-width-table invoice-total-table" style="float:right;width:50%">
+        <tr class='numbered_tr'>
+            <td style="text-align: left;">Total Amount</td>
+            <td style="text-align: right;">{{ grand_total|num_comma_separator }}</td>
+        </tr>
+        <tr class='numbered_tr'>
+            <td style="text-align: left;">Discount</td>
+            <td style="text-align: right;">{{ total_discounts|num_comma_separator }}</td>
+        </tr>
+         <tr class='numbered_tr'>
+            <td style="text-align: left;">Paid Amount</td>
+            <td style="text-align: right;">{{ total_paid_amount|num_comma_separator }}</td>
+        </tr>
+        {% if payment_methods %}
+            {% for method, amount in payment_methods.items %}
+                <tr class='numbered_tr'>
+                    <td style="text-align: left; padding-left: 1rem; color:#707070"> {{ method }}</td>
+                    <td style="text-align: right; color:#707070">{{ amount|num_comma_separator }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+       <tr class='numbered_tr' style='border-top: 1px solid #E0E0E0'>
+            <td style="text-align: left;">Balance</td>
+            <td style="text-align: right;">{{currency_iso_code}} {{ total_balance|num_comma_separator }}</td>
+        </tr> 
+         
+    </table>
+</div>
+{% endblock %}
+
+{% block created_by %}
+<div class="col-1-1">
+    Thank you for your business
+</div>
+
+<div class="col-1-3">
+    <div class="pad-v-10">Served by:</div>
+    <div class="pad-v-10">Patient / Guardian / Parent Signature</div>
+</div>
+<div class="col-1-4">
+    <div class="signature">{{ served_by }}</div>
+    <div class="signature"></div>
+</div>
+<br><br>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load humanize %}
+{% load num_comma_separator %}
+
+{{ greeting }}! Here's your daily update for {{ yesterday|date:"l, jS F Y" }}.
+<br/>
+
+<b>Invoices:</b>
+<ul>
+    {% for point in service_points_analysis %}
+        {% if point.totalPrice > 0 %}
+            <li>{{ point.service_point }}: <i>{{ currency_prefix }}. {{ point.totalPrice|num_comma_separator }}</i></li>
+        {% endif %}
+    {% endfor %}
+    <li><b>Total: <i>{{ currency_prefix }}. {{ total_invoiced_amount|num_comma_separator }}</i></b></li>
+</ul>
+<br/>
+
+<b>Bill Status:</b>
+<ul>
+    <li>Collected Amount: <i>{{ currency_prefix }}. {{ payments_total_amount_collected|num_comma_separator }}</i></li>
+    <li>Outstanding Amount: <i>{{ currency_prefix }}. {{ total_outstanding_amount|num_comma_separator }}</i></li>
+    <li>Discounted Amount: <i>{{ currency_prefix }}. {{ total_discount_amount|num_comma_separator }}</i></li>
+    <li>Waived Amount: <i>{{ currency_prefix }}. {{ total_waived_amount|num_comma_separator }}</i></li>
+</ul>
+<br/>
+
+<b>Payments</b>
+<ul>
+    {% for row in payment_amounts_by_method %}
+        <li>{{ row.paymentMethod }}: <i>{{ currency_prefix }}. {{ row.amount|num_comma_separator }}</i></li>
+    {% endfor %}
+    <li><b>Total: <i>{{ currency_prefix }}. {{ payments_total_amount_collected|num_comma_separator }}</i></b></li>
+</ul>
+<br/>
+
+<b>Visits</b>
+<ul>
+    <li>New Patients: <i>{{ patients_new_count|intcomma }}</i></li>
+    <li>Revisits: <i>{{ patients_revisits_count|intcomma }}</i></li>
+    <li><b>Total: <i>{{ visits_started_count|intcomma }}</i></b></li>
+</ul>
+<br/>
+
+<b>Wallet Balances</b>
+<ul>
+    <li>SMS: <i>KSh. {{ sms_wallet_balance|num_comma_separator }}</i></li>
+</ul>
+
+<b>Patient Records Digitization</b>
+<ul>
+    <li>Pending Review: <i>{{ pending_documents|intcomma }}</i></li>
+    <li>Approved: <i>{{ approved_documents|intcomma }}</i></li>
+    <li>Rejected: <i>{{ rejected_documents|intcomma }}</i></li>
+    <li><b>Total: <i>{{ uploaded_documents|intcomma }}</i></b></li>
+</ul>
+<br/>
+
+<i>For more detailed information, please visit the dashboard page.</i>

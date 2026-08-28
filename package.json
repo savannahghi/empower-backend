@@ -1,0 +1,16 @@
+{
+  "name": "advantage-backend",
+  "version": "1.0.0",
+  "description": "We need this travesty to run django-mjml :(.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mjml": "^4.14.1"
+  }
+}

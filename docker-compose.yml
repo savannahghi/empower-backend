@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  api:
+    image: sil/advantage-backend
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    ports:
+      - "8000:8000"
+    networks:
+      - sil_advantage
+
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - sil_advantage
+
+  celery_worker:
+    image: sil/advantage-backend
+    command: celery -A sil_advantage.config worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+    networks:
+      - sil_advantage
+
+  celery_beat:
+    image: sil/advantage-backend
+    command: celery -A sil_advantage.config beat -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+    networks:
+      - sil_advantage
+
+  redis:
+    image: redis:7
+    networks:
+      - sil_advantage
+
+  rabbitmq:
+    image: rabbitmq:3.12.8
+    networks:
+      - sil_advantage
+
+networks:
+  sil_advantage:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

@@ -1,0 +1,310 @@
+{% load mjml %}
+{% load static %}
+{% load humanize %}
+{% load num_comma_separator %}
+
+{% mjml %}
+<mjml>
+  <mj-head>
+    <mj-title>SladeAdvantage Daily Digest</mj-title>
+      <mj-font name="Montserrat"
+       href="https://fonts.googleapis.com/css?family=Montserrat" />
+      <mj-font name="Lato"
+       href="https://fonts.googleapis.com/css?family=Lato" />
+  </mj-head>
+  <mj-body>
+    <!-- Header -->
+    <mj-section padding-bottom="0px">
+      <mj-column>
+        <mj-image width="200px" src="{{ api_host }}/{% static 'img/slade360logo.png' %}" alt="Slade360 Logo" />
+      </mj-column>
+    </mj-section>
+
+    <!-- Introduction -->
+    <mj-section>
+      <mj-column>
+        <mj-text padding-bottom="0" font-size="24px">
+          <p align="center" font-family="Lato">Your Daily Stats Update</p>
+        </mj-text>
+        <mj-text padding-top="0" font-size="16px" font-family="Montserrat">
+          <p align="center" font-family="Lato" style="margin-top: -7px;">{{ yesterday|date:"l, jS F Y" }}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Overview Card -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF" width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" font-size="14px" font-weight="600">
+          <mj-text style="color: #623F99;" font-family="Montserrat">Overview</mj-text>
+        </mj-text>
+        <mj-table font-family="Lato" color="#393939" font-size="14px">
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">Total Invoiced Amount</td>
+            <td style="padding: 0 0 0 15px; text-align: right;">{{ currency_prefix }}. {{ total_invoiced_amount|num_comma_separator }}</td>
+          </tr>
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">Visits</td>
+            <td style="padding: 0 0 0 15px; text-align: right;">{{ visits_started_count|intcomma }}</td>
+          </tr>
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">SMS Wallet Balance</td>
+            <td style="padding: 0 0 0 15px; text-align: right;" color='{{ sms_wallet_balance_low|yesno:"#880808,#393939" }}'>KSh. {{ sms_wallet_balance|num_comma_separator }}</td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- Invoices -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF" width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" font-size="14px" font-weight="600">
+          <mj-text style="color: #623F99;" font-family="Montserrat">Invoices</mj-text>
+        </mj-text>
+        <mj-table font-size="14px" font-family="Lato" color="#393939">
+          <tr style="border-bottom: 0px solid #ECEDEE; text-align: center; padding: 15px 0;">
+            <th style="padding: 0 15px 8px 0;"></th>
+            <th style="padding: 0 15px; color: #808080; font-weight: 400">Invoices</th>
+            <th style="padding: 0 0 0 15px; color: #808080; font-weight: 400; text-align: right;">Amount</th>
+          </tr>
+          {% for point in service_points_analysis %}
+            {% if point.totalPrice > 0 %}
+              <tr style="text-align: center;">
+                <td style="padding: 0 15px 5px 0;text-align: left;">{{ point.service_point }}</td>
+                <td style="padding: 0 15px;">{{ point.count|intcomma }}</td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ currency_prefix }}. {{ point.totalPrice|num_comma_separator }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          </mj-table>
+          <mj-divider border-width="1px" border-color="#50AD30" />
+        </mj-column>
+
+       <mj-group background-color="#FCFBFF" width="100%">
+        <mj-column width="40%" padding-left="8px" padding-bottom="16px">
+        <mj-text align="left" padding-top="0" color="#623F99" font-size="14px" font-family="Lato">
+              Total
+          </mj-text>
+        </mj-column>
+        <mj-column width="20%" padding-bottom="16px">
+            <mj-text align="center" padding-top="0" color="#623F99" font-size="14px" font-family="Lato">
+              {{ total_invoice_count|intcomma }}
+            </mj-text>
+        </mj-column>
+         <mj-column width="40%" padding-right="8px" padding-bottom="16px">
+            <mj-text align="right" padding-top="0" color="#623F99" font-size="14px" font-family="Lato">
+              {{ currency_prefix }}. {{ total_invoiced_amount|num_comma_separator }}
+            </mj-text>
+        </mj-column>
+      </mj-group>
+    </mj-section>
+
+    <!-- Bill Status -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF" width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" font-size="14px" font-weight="600">
+          <mj-text style="color: #623F99;" font-family="Montserrat">Bill Status</mj-text>
+        </mj-text>
+        <mj-table font-family="Lato" color="#393939" font-size="14px">
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">Collected Amount</td>
+            <td style="padding: 0 0 0 15px; text-align: right;">{{ currency_prefix }}. {{ payments_total_amount_collected|num_comma_separator }}</td>
+          </tr>
+          <tr style="text-align:center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">Outstanding Amount</td>
+            <td style="padding: 0 0 0 15px; text-align :right;">{{ currency_prefix }}. {{ total_outstanding_amount|num_comma_separator }}</td>
+          </tr>
+        </mj-table>
+        <mj-divider border-width="1px" border-color="#50AD30" />
+      </mj-column>
+
+      <mj-column background-color="#FCFBFF" width="100%" padding-bottom="16px" padding-left="8px" padding-right="8px">
+        <mj-table font-family="Lato" font-size="14px">
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left; color: #623F99;">Total Invoiced Amount</td>
+            <td style="padding: 0 0 0 15px; color: #623F99; text-align: right;">{{ currency_prefix }}. {{ total_invoiced_amount|num_comma_separator }}</td>
+          </tr>
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left; color: #623F99;">Discounted Amount</td>
+            <td style="padding: 0 0 0 15px; color: #623F99; text-align: right;">{{ currency_prefix }}. {{ total_discount_amount|num_comma_separator }}</td>
+          </tr>
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align:left; color: #623F99;">Waived Amount</td>
+            <td style="padding: 0 0 0 15px; color: #623F99; text-align: right;">{{ currency_prefix }}. {{ total_waived_amount|num_comma_separator }}</td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- Payments -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF"  width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" padding-top="10px" font-size="14px" font-weight="600">
+        <mj-text style="color: #623F99;" font-family="Montserrat">Payments</mj-text>
+        </mj-text>
+        <mj-table font-family="Lato" color="#393939" font-size="14px">
+            {% for row in payment_amounts_by_method %}
+              <tr style="text-align: center;">
+                <td style="padding: 0 15px 5px 0; text-align: left;">{{ row.paymentMethod }}</td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ currency_prefix }}. {{ row.amount|num_comma_separator }}</td>
+              </tr>
+            {% endfor %}
+          </mj-table>
+          <mj-divider border-width="1px" border-color="#50AD30" />
+        </mj-column>
+
+        <mj-group background-color="#FCFBFF" width="100%">
+          <mj-column width="50%" padding-top="12px" padding-bottom="16px" padding-left="8px">
+          <mj-text align="left" padding-top="0" color="#623F99" font-size="14px" font-family="Lato">
+                Total
+            </mj-text>
+          </mj-column>
+           <mj-column width="50%" padding-top="12px" padding-bottom="16px" padding-right="8px">
+              <mj-text align="right" padding-top="0" color="#623F99" font-family="Lato" font-size="14px">
+              {{ currency_prefix }}. {{ payments_total_amount_collected|num_comma_separator }}
+            </mj-text>
+        </mj-column>
+      </mj-group>
+    </mj-section>
+
+    <!-- Visits -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF"  width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" padding-top="10px" font-size="14px" font-weight="600">
+        <mj-text style="color: #623F99;" font-family="Montserrat">Visits</mj-text>
+        </mj-text>
+        <mj-table font-family="Lato" color="#393939" font-size="14px">
+          <tr style="text-align: center">
+            <td style="padding: 0 15px 5px 0; text-align: left;">New Patients</td>
+            <td style="padding: 0 15px;"></td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ patients_new_count|intcomma }}</td>
+              </tr>
+              <tr style="text-align: center;">
+                <td style="padding: 0 15px 5px 0; text-align: left;">Revisits</td>
+                <td style="padding: 0 15px;"></td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ patients_revisits_count|intcomma }}</td>
+              </tr>
+            </mj-table>
+            <mj-divider border-width="1px" border-color="#50AD30" />
+          </mj-column>
+
+        <mj-group background-color="#FCFBFF" width="100%">
+          <mj-column width="50%" padding-bottom="16px" padding-left="8px">
+          <mj-text align="left" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                Total
+            </mj-text>
+          </mj-column>
+          <mj-column width="50%" padding-bottom="16px" padding-right="8px">
+              <mj-text align="right" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                {{ visits_started_count|intcomma }}
+              </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+
+    <!-- Patient Records Digitization -->
+    <mj-section padding="16px 0 0">
+      <mj-column background-color="#FCFBFF"  width="100%" padding-top="16px" padding-left="8px" padding-right="8px">
+        <mj-text align="left" padding-top="10px" font-size="14px" font-weight="600">
+        <mj-text style="color: #623F99;" font-family="Montserrat">Patient Document Digitization</mj-text>
+        </mj-text>
+        <mj-table font-family="Lato" color="#393939" font-size="14px">
+          <tr style="text-align: center;">
+            <td style="padding: 0 15px 5px 0; text-align: left;">Pending Review</td>
+            <td style="padding: 0 15px;"></td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ pending_documents|intcomma }}</td>
+              </tr>
+              <tr style="text-align: center;">
+                <td style="padding: 0 15px 5px 0; text-align: left;">Approved</td>
+                <td style="padding: 0 15px;"></td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ approved_documents|intcomma }}</td>
+              </tr>
+              <tr style="text-align: center;">
+                <td style="padding: 0 15px 5px 0; text-align: left;">Rejected</td>
+                <td style="padding: 0 15px;"></td>
+                <td style="padding: 0 0 0 15px; text-align: right;">{{ rejected_documents|intcomma }}</td>
+              </tr>
+            </mj-table>
+            <mj-divider border-width="1px" border-color="#50AD30" />
+          </mj-column>
+
+        <mj-group background-color="#FCFBFF" width="100%">
+          <mj-column width="50%" padding-bottom="16px" padding-left="8px">
+          <mj-text align="left" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                Total uploaded files
+            </mj-text>
+          </mj-column>
+          <mj-column width="50%" padding-bottom="16px" padding-right="8px">
+              <mj-text align="right" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                {{ uploaded_documents|intcomma }}
+              </mj-text>
+          </mj-column>
+        </mj-group>
+        <mj-group background-color="#FCFBFF" width="100%">
+          <mj-column width="50%" padding-bottom="16px" padding-left="8px">
+          <mj-text align="left" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                Uploaded yesterday
+            </mj-text>
+          </mj-column>
+          <mj-column width="50%" padding-bottom="16px" padding-right="8px">
+              <mj-text align="right" padding-top="12px" color="#623F99" font-family="Lato" font-size="14px">
+                {{ uploaded_documents_yesterday|intcomma }}
+              </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+
+    <!-- CTA & Sign-Off -->
+    <mj-section padding-left="8px">
+      <mj-column>
+        <mj-text padding-bottom="0" font-size="14px" color="#434343">
+          <p style="line-height: 1.4;">
+            The total uploaded files so far are <span style="color: #623F99; font-weight: 500;">{{ uploaded_documents|intcomma }}</span>;
+            this is <span style="color: #623F99; font-weight:500;">{{ uploaded_percentage |floatformat:0  }}%</span> of the entire patient files.
+          </p>
+        </mj-text>
+
+        <mj-text padding-bottom="0" font-size="14px" color="#434343">
+          <p style="line-height: 1.4">
+            <span><a style="text-decoration: none; color: #0F7DFF" href="https://advantage.slade360.com/advantage/dashboard/visits-dashboard" target="_blank">Visit the dashboard page</a></span> for more information, including invoices breakdown and service point analysis.
+          </p>
+        </mj-text>
+
+        <mj-text padding-bottom="0" color="grey">
+          <p>Kind regards,</p>
+          <p>SladeAdvantage Team</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding-top="0px" background-color="#623F99">
+      <mj-column>
+        <mj-text color="white" font-size="16px" align="left" padding-left="28px" padding-top="25px">
+        SladeAdvantage
+        </mj-text>
+
+        <mj-divider border-width="1px" border-style="solid" border-color="grey" />
+
+        <mj-text color="white" align="left">
+          <p>If you have any questions or feedback, feel free to contact us on:</p>
+          <p class="highlight-text">
+            <a href="mailto:advantage@savannahinformatics.com" style="color:white;text-decoration:none;">advantage@savannahinformatics.com</a>
+          </p>
+          <p class="highlight-text" style="margin-top: -4px;">
+            <a href="tel:+254790360360" style="color:white; text-decoration: none;">0790 360 360</a>
+          </p>
+          <p>One Padmore Place,</p>
+          <p style="margin-top: -9px;">George Padmore Road,</p>
+          <p style="margin-top: -8px;">Nairobi.</p>
+        </mj-text>
+
+        <mj-text color="#D3D3D3" font-weight="bold" align="center" padding-top="4px">
+          Savannah Informatics Limited
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>
+{% endmjml %}
