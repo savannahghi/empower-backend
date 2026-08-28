@@ -112,7 +112,7 @@ setup(
         "python-Levenshtein==0.26.1",
         "celery==5.3.1",
         "django-celery-beat==2.5.0",
-        "cryptography==41.0.3",
+        "cryptography==50.0.0",
         "weasyprint==58.1",
         "whitenoise==6.5.0",
         "sentry_sdk==1.29.2",
