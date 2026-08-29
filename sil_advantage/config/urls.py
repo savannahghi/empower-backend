@@ -36,7 +36,6 @@ urlpatterns = [
         cache_page(3600)(HomePageView.as_view()),
         name="homepage",
     ),
-    path("auth", include("sil_auth_backends.urls")),
     path("api/", include(apipatterns)),  # type: ignore
     path("me/", MeView.as_view(), name="me"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

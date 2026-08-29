@@ -85,8 +85,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
-    "social_django",
-    "sil_auth_backends",
     "sil_renderers",
     "phonenumber_field",
     "mjml",
@@ -139,7 +137,6 @@ MIDDLEWARE += [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
 ]
 
 SECURE_HSTS_SECONDS = 31_536_000
@@ -190,7 +187,7 @@ REST_FRAMEWORK = {
         "sil_renderers.ExcelRenderer",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "sil_auth_backends.backends.token.SILOAuth2Token",
+        "sil_advantage.sil_auth.keycloak.KeycloakAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
@@ -236,8 +233,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
             ]
         },
     }
@@ -266,70 +261,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 OLD_PASSWORD_FIELD_ENABLED = True
-SIL_AUTH_SERVER_DOMAIN = os.getenv(
-    "AUTHSERVER_DOMAIN",
-    "http://localhost:9000",
+KEYCLOAK = {
+    "BASE_URL": os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8081"),
+    "REALM": os.getenv("KEYCLOAK_REALM", "empower"),
+    "CLIENT_ID": os.getenv("KEYCLOAK_CLIENT_ID", ""),
+    "CLIENT_SECRET": os.getenv("KEYCLOAK_CLIENT_SECRET", ""),
+    "TIMEOUT": int(os.getenv("KEYCLOAK_TIMEOUT", "10")),
+    # Keycloak has no notion of a Slade code. A token may carry one as a
+    # `business_partner` claim; otherwise all users map to this organisation.
+    "DEFAULT_SLADE_CODE": os.getenv("KEYCLOAK_DEFAULT_SLADE_CODE", ""),
+}
+KEYCLOAK["INTROSPECTION_URL"] = (
+    f"{KEYCLOAK['BASE_URL']}/realms/{KEYCLOAK['REALM']}"
+    "/protocol/openid-connect/token/introspect"
 )
-SOCIAL_AUTH_SIL_OAUTH2_KEY = os.getenv("OAUTH2_KEY", "")
-SOCIAL_AUTH_SIL_OAUTH2_SECRET = os.getenv("OAUTH2_SECRET", "")
-SOCIAL_AUTH_USER_FIELDS = [
-    "email",
-    "guid",
-    "is_active",
-    "is_staff",
-    "permissions",
-]
-SOCIAL_AUTH_EXTRA_DATA = [
-    ("business_partner", "business_partner"),
-    ("permissions", "permissions"),
-    ("organisation", "organisation"),
-    ("allowed_scopes", "allowed_scopes"),
-]
-SOCIAL_AUTH_SIL_OAUTH2_SCOPES = [
-    "auth.me.read",
-    "auth.bp.read",
-    "auth.me.read",
-    "auth.user.read",
-    "auth.user.write",
-    "auth.permission.read",
-    "auth.role.read",
-    "auth.role.write",
-    "advantage.*",
-]
-SOCIAL_AUTH_PIPELINE = (
-    "social_core.pipeline.social_auth.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.auth_allowed",
-    "sil_advantage.sil_auth.pipeline.convert_permissions_to_string",
-    "social_core.pipeline.social_auth.social_user",
-    "sil_auth_backends.pipeline.user.fetch_user",
-    "social_core.pipeline.user.create_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-    "sil_advantage.sil_auth.pipeline.create_person",
-    "sil_advantage.sil_auth.pipeline.create_user_profile",
-)
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_RAISE_EXCEPTIONS = get_bool_env(
-    "SOCIAL_AUTH_RAISE_EXCEPTIONS",
-    "True",
-)
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = get_bool_env(
-    "SOCIAL_AUTH_REDIRECT_IS_HTTPS",
-    "True",
-)
-SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ["state"]
 
-LOGIN_ERROR_URL = "/index/"
 LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = "/auth/login/sil-oauth2/"
-AUTHENTICATION_BACKENDS = (
-    # PRECISE ORDER MATTERS HERE
-    "sil_auth_backends.backends.oauth2.SILOAuth2",
-    "sil_auth_backends.backends.SILOAuth2TokenBackend",
-)
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 AUTH_USER_MODEL = "sil_auth.SILUser"
+
+# Outbound clients for user provisioning and HealthCRM. Neither is part of
+# Empower; these settings exist so the modules that import them still load.
+SIL_AUTH_SERVER_DOMAIN = os.getenv("AUTHSERVER_DOMAIN", "http://localhost:9000")
+AUTH_SERVER_API_SCOPES = ["auth.me.read", "auth.user.read", "advantage.*"]
 
 AUTH_SERVER_API_CONNECTION = {
     "HOST": os.getenv(
@@ -346,7 +300,7 @@ AUTH_SERVER_API_CONNECTION = {
         "AUTH_SERVER_API_TOKEN_URL",
         "{}/oauth2/token/".format(SIL_AUTH_SERVER_DOMAIN),
     ),
-    "SCOPES": SOCIAL_AUTH_SIL_OAUTH2_SCOPES,
+    "SCOPES": AUTH_SERVER_API_SCOPES,
 }
 
 """ Miscellaneous """
@@ -553,7 +507,7 @@ CHARGE_MASTER = {
     "username": os.environ.get("CHARGE_MASTER_USERNAME"),
     "password": os.environ.get("CHARGE_MASTER_PASSWORD"),
     "grant_type": os.environ.get("CHARGE_MASTER_GRANT_TYPE"),
-    "SCOPES": SOCIAL_AUTH_SIL_OAUTH2_SCOPES,
+    "SCOPES": AUTH_SERVER_API_SCOPES,
 }
 
 """ Is_client """
