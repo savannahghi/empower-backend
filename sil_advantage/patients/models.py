@@ -313,10 +313,11 @@ class Patient(  # type: ignore
         }
 
         identifiers = []
+        # Values are clinical's IdentifierType enum, which is lower case.
         id_mapping = {
-            "nationalID": "NATIONAL_ID",
-            "passportID": "PASSPORT",
-            "alienID": "ALIEN_ID",
+            "nationalID": "national_id",
+            "passportID": "passport_number",
+            "alienID": "alien_id",
         }
         for person_id in person.person_ids.all().iterator():
             try:
@@ -331,12 +332,14 @@ class Patient(  # type: ignore
                     f"ID Mapping with key {person_id.id_document_type} does not exist."
                 )
 
-        identifiers.append(
-            {
-                "type": "HEALTH_ID",
-                "value": self.global_health_id if self.global_health_id else "",
-            }
-        )
+        # Only sent once assigned; clinical rejects an empty identifier value.
+        if self.global_health_id:
+            identifiers.append(
+                {
+                    "type": "slade_health_id",
+                    "value": self.global_health_id,
+                }
+            )
 
         payload["input"]["identifiers"] = identifiers
 

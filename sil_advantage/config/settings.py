@@ -271,6 +271,10 @@ KEYCLOAK = {
     # `business_partner` claim; otherwise all users map to this organisation.
     "DEFAULT_SLADE_CODE": os.getenv("KEYCLOAK_DEFAULT_SLADE_CODE", ""),
 }
+KEYCLOAK["TOKEN_URL"] = (
+    f"{KEYCLOAK['BASE_URL']}/realms/{KEYCLOAK['REALM']}"
+    "/protocol/openid-connect/token"
+)
 KEYCLOAK["INTROSPECTION_URL"] = (
     f"{KEYCLOAK['BASE_URL']}/realms/{KEYCLOAK['REALM']}"
     "/protocol/openid-connect/token/introspect"

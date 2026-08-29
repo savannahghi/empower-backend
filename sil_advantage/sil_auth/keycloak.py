@@ -13,6 +13,39 @@ from sil_advantage.sil_auth.models import SILUser
 # Cache introspection so a burst of requests costs one round trip, not one each.
 INTROSPECTION_CACHE_TTL = 60
 
+SERVICE_TOKEN_CACHE_KEY = "keycloak_service_account_token"
+
+# Refresh a little before expiry so a token is never handed out about to lapse.
+SERVICE_TOKEN_LEEWAY = 30
+
+
+def service_account_token() -> str:
+    """Return a client-credentials token for calling other Empower services."""
+    cached = cache.get(SERVICE_TOKEN_CACHE_KEY)
+    if cached is not None:
+        return cached
+
+    try:
+        response = requests.post(
+            settings.KEYCLOAK["TOKEN_URL"],
+            data={
+                "grant_type": "client_credentials",
+                "client_id": settings.KEYCLOAK["CLIENT_ID"],
+                "client_secret": settings.KEYCLOAK["CLIENT_SECRET"],
+            },
+            timeout=settings.KEYCLOAK["TIMEOUT"],
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except requests.RequestException as error:
+        raise RuntimeError(f"Could not obtain a Keycloak token: {error}") from error
+
+    token = payload["access_token"]
+    ttl = max(int(payload.get("expires_in", 60)) - SERVICE_TOKEN_LEEWAY, 1)
+    cache.set(SERVICE_TOKEN_CACHE_KEY, token, ttl)
+
+    return token
+
 
 class KeycloakAuthentication(authentication.BaseAuthentication):
     """Authenticate a bearer token against Keycloak, mapping it to a SILUser."""

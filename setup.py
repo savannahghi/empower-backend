@@ -159,7 +159,6 @@ setup(
         # Templating
         "django-mjml==1.1",
         # GraphQL
-        "gql[aiohttp]==3.5.0",
         # Matrix
         "matrix-nio==0.21.2",
         # JSON Schema

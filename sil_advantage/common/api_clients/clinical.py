@@ -1,26 +1,26 @@
 """Clinical Service."""
 import logging
 import uuid
-from typing import Any
+from typing import Any, Optional
 
+import requests
 from django.conf import settings
-from gql import Client, gql
-from gql.transport.aiohttp import AIOHTTPTransport
-from gql.transport.exceptions import (
-    TransportProtocolError,
-    TransportQueryError,
-    TransportServerError,
-)
 
-from sil_advantage.common.api_clients.auth_server import (
-    get_auth_server_credentials,
-)
+from sil_advantage.sil_auth.keycloak import service_account_token
 
 LOGGER = logging.getLogger(__file__)
 
+TIMEOUT = 30
+
 
 class ClinicalServiceClient:
-    """API Client for the Clinical Service."""
+    """API Client for the Clinical Service.
+
+    Clinical exposes the same operations over REST and GraphQL. REST is the
+    surface under active development, and it does not validate identifier types
+    against a generated enum, so it tolerates the older names this version
+    sends.
+    """
 
     def __init__(
         self,
@@ -28,52 +28,37 @@ class ClinicalServiceClient:
         facility_id: uuid.UUID,
     ) -> None:
         """Initialize the API Client."""
-        credz = get_auth_server_credentials()
-        headers = {
-            "Authorization": f"Bearer {credz['access_token']}",
+        self.base_url = str(settings.CLINICAL_SERVICE_URL).rstrip("/")
+        self.headers = {
+            "Authorization": f"Bearer {service_account_token()}",
             "Clinical-Organization-ID": str(org_id),
             "Clinical-Facility-ID": str(facility_id),
         }
-        transport = AIOHTTPTransport(
-            url=f"{settings.CLINICAL_SERVICE_URL}/graphql",
-            headers=headers,
-        )
-        self.client = Client(
-            transport=transport,
-            fetch_schema_from_transport=True,
-        )
 
-    def query(self, query_string: str, payload: dict) -> dict[str, Any]:
-        """Run a GraphQL query."""
-        return self.client.execute(
-            gql(query_string),
-            variable_values=payload,
+    def request(
+        self,
+        method: str,
+        path: str,
+        payload: Optional[dict] = None,
+    ) -> dict[str, Any]:
+        """Send a request to the clinical service."""
+        response = requests.request(
+            method,
+            f"{self.base_url}{path}",
+            json=payload,
+            headers=self.headers,
+            timeout=TIMEOUT,
         )
+        response.raise_for_status()
+
+        return response.json() if response.content else {}
 
     # Patients
     def create_patient(self, payload: dict) -> dict[str, Any]:
         """Create a patient."""
         try:
-            return self.query(
-                """
-                    mutation($input: PatientInput!){
-                        createPatient(input: $input){
-                            id
-                            name
-                            phoneNumber
-                            gender
-                            birthDate
-                            active
-                        }
-                    }
-                """,
-                payload,
-            )["createPatient"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request("POST", "/api/v1/patient", payload["input"])
+        except requests.RequestException:
             LOGGER.error(
                 "Error while creating patient on clinical server",
                 exc_info=True,
@@ -88,27 +73,12 @@ class ClinicalServiceClient:
     ) -> dict[str, Any]:
         """Update a patient."""
         try:
-            payload["id"] = str(patient_id)
-            return self.query(
-                """
-                    mutation($id: String!, $input: PatchPatientInput!) {
-                        patchPatient(id: $id, input: $input) {
-                            id
-                            name
-                            phoneNumber
-                            gender
-                            birthDate
-                            active
-                        }
-                    }
-                """,
-                payload,
-            )["patchPatient"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request(
+                "PATCH",
+                f"/api/v1/patient/{patient_id}",
+                payload["input"],
+            )
+        except requests.RequestException:
             LOGGER.error(
                 "Error while updating patient on clinical server",
                 exc_info=True,
@@ -119,20 +89,9 @@ class ClinicalServiceClient:
     def delete_patient(self, patient_id: uuid.UUID) -> bool:
         """Delete a patient."""
         try:
-            payload = {"id": str(patient_id)}
-            return self.query(
-                """
-                    mutation($id: String!) {
-                        deletePatient(id: $id)
-                    }
-                """,
-                payload,
-            )["deletePatient"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            self.request("DELETE", f"/api/v1/patient/{patient_id}")
+            return True
+        except requests.RequestException:
             LOGGER.error(
                 "Error while deleting patient on clinical server",
                 exc_info=True,
@@ -142,25 +101,14 @@ class ClinicalServiceClient:
 
     # Visits
     def create_visit(self, payload: dict) -> dict[str, Any]:
-        """Create a visit."""
+        """Create a visit, which clinical models as an episode of care."""
         try:
-            return self.query(
-                """
-                    mutation($episodeOfCare: EpisodeOfCareInput!){
-                        createEpisodeOfCare(episodeOfCare: $episodeOfCare) {
-                            id
-                            status
-                            patientID
-                        }
-                    }
-                """,
-                payload,
-            )["createEpisodeOfCare"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request(
+                "POST",
+                "/api/v1/episode-of-care",
+                payload["episodeOfCare"],
+            )
+        except requests.RequestException:
             LOGGER.error(
                 "Error while creating visit on clinical server",
                 exc_info=True,
@@ -170,29 +118,17 @@ class ClinicalServiceClient:
 
     def update_visit(
         self,
-        visit_id: uuid.UUID,
+        episode_of_care_id: uuid.UUID,
         payload: dict,
     ) -> dict[str, Any]:
         """Update a visit."""
         try:
-            payload["id"] = str(visit_id)
-            return self.query(
-                """
-                    mutation($id: String!, $episodeOfCare: EpisodeOfCareInput!){
-                        patchEpisodeOfCare(id: $id, episodeOfCare: $episodeOfCare) {
-                            id
-                            status
-                            patientID
-                        }
-                    }
-                """,
-                payload,
-            )["patchEpisodeOfCare"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request(
+                "PATCH",
+                f"/api/v1/episode-of-care/{episode_of_care_id}",
+                payload["episodeOfCare"],
+            )
+        except requests.RequestException:
             LOGGER.error(
                 "Error while updating visit on clinical server",
                 exc_info=True,
@@ -202,22 +138,16 @@ class ClinicalServiceClient:
 
     # Encounters
     def create_encounter(self, payload: dict) -> dict[str, Any]:
-        """Create an encounter."""
+        """Start an encounter on an episode of care."""
         try:
-            response = self.query(
-                """
-                    mutation($episodeID: String!) {
-                        startEncounter(episodeID: $episodeID)
-                    }
-                """,
-                payload,
+            response = self.request(
+                "POST",
+                "/api/v1/encounter",
+                {"episodeOfCareID": payload["episodeID"]},
             )
-            return {"id": response["startEncounter"]}
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            # This endpoint returns the new id under `results`.
+            return {"id": response["results"]}
+        except (requests.RequestException, KeyError):
             LOGGER.error(
                 "Error while creating encounter on clinical server",
                 exc_info=True,
@@ -232,75 +162,36 @@ class ClinicalServiceClient:
     ) -> dict[str, Any]:
         """Update an encounter."""
         try:
-            payload["encounterID"] = str(encounter_id)
-            return self.query(
-                """
-                    mutation ($encounterID: String!, $input: EncounterInput!){
-                        patchEncounter(encounterID: $encounterID, input: $input) {
-                            id
-                            status
-                        }
-                    }
-                """,
-                payload,
-            )["patchEncounter"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request(
+                "PATCH",
+                f"/api/v1/encounter/{encounter_id}",
+                payload["input"],
+            )
+        except requests.RequestException:
             LOGGER.error(
                 "Error while updating encounter on clinical server",
                 exc_info=True,
                 extra={"Payload": payload},
             )
-            return {"error": "Error while updating encounter on clinical server"}
+            return {
+                "error": "Error while updating encounter on clinical server"
+            }
 
-    # MedicationRequests
+    # Prescriptions
     def create_prescription(self, payload: dict) -> dict[str, Any]:
-        """Create a medication request."""
+        """Create a prescription."""
         try:
-            return self.query(
-                """
-                    mutation ($input: PrescriptionInput!) {
-                        createPrescription(input: $input) {
-                            id
-                            encounterID
-                            status
-                            medication
-                            authoredOn
-                            diagnosis
-                            facilityName
-                            orderedBy
-                            dosageInstructions {
-                                route
-                                doseQuantity
-                                doseUnit
-                                period
-                                periodUnit
-                                frequency
-                                duration
-                                durationUnit
-                                startDate
-                                endDate
-                                condition
-                                patientInstruction
-                            }
-                        }
-                    }
-                """,
-                payload,
-            )["createPrescription"]
-        except (
-            TransportServerError,
-            TransportProtocolError,
-            TransportQueryError,
-        ):
+            return self.request(
+                "POST",
+                "/api/v1/medication/prescription",
+                payload["input"],
+            )
+        except requests.RequestException:
             LOGGER.error(
-                "Error while creating medication request on clinical server",
+                "Error while creating prescription on clinical server",
                 exc_info=True,
                 extra={"Payload": payload},
             )
             return {
-                "error": "Error while creating medication request on clinical server"
+                "error": "Error while creating prescription on clinical server"
             }
