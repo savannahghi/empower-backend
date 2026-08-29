@@ -249,6 +249,16 @@ class PatientViewSet(CacheableBaseView):
     )
     def person_search(self, request: AuthenticatedRequest) -> Response:
         """Proxy patient search calls to Health-CRM."""
+        # HealthCRM is not part of every deployment. Without it there is nothing
+        # to match against, which is an empty result rather than an error: the
+        # registration form uses this to offer an existing person, and falls
+        # through to creating one when there are none.
+        if not settings.HEALTH_CRM_API_URL:
+            return Response(
+                data={"count": 0, "next": None, "previous": None, "results": []},
+                status=status.HTTP_200_OK,
+            )
+
         health_crm_client = get_health_crm_client()
 
         params: dict = request.query_params
