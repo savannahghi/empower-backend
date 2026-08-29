@@ -284,6 +284,21 @@ class RemoteObjectMixin:
                     "price": "new_price",
                 }
         """
+        # The clients report a failed call by returning an error rather than
+        # raising, and a partial remote response is possible too. Either way the
+        # local record stays unsynced for the retry task to pick up; failing the
+        # write would lose data this service is the system of record for.
+        missing = [f for f in fields_mapping.values() if f not in result]
+        if missing:
+            LOGGER.error(
+                "Not updating %s from remote: response is missing %s",
+                self._meta.model_name,
+                ", ".join(missing),
+                extra={"result": result},
+            )
+
+            return
+
         sync_attr = "_disable_sync"
         with transaction.atomic():
             # Lock the current object for updating
