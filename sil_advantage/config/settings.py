@@ -655,10 +655,10 @@ TRANSACTING_SIL_ORG_SLADE_CODE = int(
 )
 
 """ Celery """
-BROKER_URL = os.getenv(
-    "BROKER_URL",
-    "amqp://advantage_uat:Sp040w76jGyp4VU7@localhost:5672/advantage_uat",
-)
+# Redis rather than RabbitMQ: it is already in the stack for the cache, and
+# Celery supports it as a broker. Kombu has no NATS transport, so the events
+# clinical publishes over NATS and Django's background jobs stay separate.
+BROKER_URL = os.getenv("BROKER_URL", "redis://localhost:6379/1")
 RESULT_BACKEND = os.getenv("RESULT_BACKEND", BROKER_URL)
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_DEFAULT_QUEUE = "advantage_tasks"
