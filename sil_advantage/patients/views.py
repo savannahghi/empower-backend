@@ -5,8 +5,10 @@ from typing import Any
 
 from django.conf import settings
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -41,6 +43,7 @@ from sil_advantage.patients.serializers import (
     PatientListUploadSerializer,
     PatientSerializer,
 )
+from sil_advantage.integrations.tasks import sync_updates_to_remote
 from sil_advantage.patients.tasks import (
     process_patient_list_upload,
     send_health_id_registration_sms,
@@ -237,6 +240,48 @@ class PatientViewSet(CacheableBaseView):
         )
         return Response(
             RelatedPersonSerializer(related, many=True).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
+    def sync_patient_to_clinical(
+        self, request: AuthenticatedRequest
+    ) -> Response:
+        """Re-run the clinical sync for one patient.
+
+        A sync that fails leaves the patient saved but unsynced, so that a
+        failure downstream never costs a registration. This is how such a
+        patient is sent again once the cause is fixed.
+        """
+        patient_id = str(request.data.get("patient_id", "")).strip()
+
+        if not patient_id:
+            raise ValidationError({"patient_id": "This field is required."})
+
+        patient = get_object_or_404(Patient, id=patient_id)
+
+        sync_updates_to_remote(
+            f"{patient._meta.app_label}.{patient._meta.model_name}",
+            patient.pk,
+            "CLINICAL_SERVICE",
+            "UPDATE" if patient.clinical_id else "CREATE",
+        )
+        patient.refresh_from_db()
+
+        if patient.clinical_id is None:
+            return Response(
+                {"error": "The patient could not be synced."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return Response(
+            {"clinical_id": str(patient.clinical_id)},
             status=status.HTTP_200_OK,
         )
 
