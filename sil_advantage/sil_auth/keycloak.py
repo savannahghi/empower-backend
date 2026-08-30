@@ -126,6 +126,17 @@ class KeycloakAuthentication(authentication.BaseAuthentication):
             user = SILUser.objects.filter(guid=subject).first()
 
             if user is None:
+                # Rebuilding Keycloak issues a new subject for the same person.
+                # Email is the stable identity, so adopt the existing account
+                # rather than failing on the unique email.
+                user = SILUser.objects.filter(email__iexact=email).first()
+
+                if user is not None:
+                    user.guid = subject
+                    user.permissions = permissions
+                    user.save(update_fields=["guid", "permissions"])
+
+            if user is None:
                 user = SILUser(
                     guid=subject, email=email, permissions=permissions
                 )
