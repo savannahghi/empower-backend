@@ -78,16 +78,21 @@ class UserSerializer(BaseSerializer):
         branch_id = request.META.get(
             "HTTP_X_BRANCH", request.META.get("X-Branch", None)
         )
-        try:
-            unit = OrgUnit.objects.get(
-                organisation=instance.organisation,
-                erp_id=branch_id,
-                orgunit_type="branch",
-            )
-            facility_id = unit.facility_id
-        except OrgUnit.DoesNotExist:
-            facility_id = None
-        return facility_id
+        branches = OrgUnit.objects.filter(
+            organisation=instance.organisation,
+            orgunit_type="branch",
+        )
+
+        if branch_id:
+            unit = branches.filter(erp_id=branch_id).first()
+        else:
+            # This is fetched once at login, before a workstation has been
+            # chosen, so the first call carries no branch header. A single
+            # branch organisation has no ambiguity to resolve; without this the
+            # facility id stays null and every clinical call is rejected.
+            unit = branches.first() if branches.count() == 1 else None
+
+        return unit.facility_id if unit else None
 
     def get_matrix_token(self, instance: SILUser) -> dict:
         """Get the Matrix access token."""
