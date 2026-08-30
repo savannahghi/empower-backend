@@ -7,7 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework.status import HTTP_200_OK
+
 from sil_advantage.common.api_clients import make_request
+from sil_advantage.common.api_clients.erp import erp_configured
 from sil_advantage.common.types import AuthenticatedRequest
 
 
@@ -29,6 +32,14 @@ class ERPView(APIView):
         **kwargs: Any,
     ) -> Response | FileResponse:
         """Proxy calls to the ERP."""
+        if not erp_configured():
+            # The ERP is a separate deployment. Report an empty collection so the
+            # UI renders without it instead of surfacing a server error.
+            return Response(
+                data={"count": 0, "next": None, "previous": None, "results": []},
+                status=HTTP_200_OK,
+            )
+
         api_scheme = settings.ERP_API_CONFIG["api_scheme"]
         api_host = settings.ERP_API_CONFIG["api_host"]
         host = f"{api_scheme}://{api_host}"

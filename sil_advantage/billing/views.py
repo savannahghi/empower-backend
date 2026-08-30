@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from sil_transitions.views import TransitionViewMixin
 
 from sil_advantage.billing import filters, models, serializers, tasks, utils
-from sil_advantage.common.api_clients.erp import get_erp_client
+from sil_advantage.common.api_clients.erp import erp_configured, get_erp_client
 from sil_advantage.common.types import AuthenticatedRequest
 from sil_advantage.common.views.base import CacheableBaseView
 from sil_advantage.permissions import perms, scopes
@@ -490,6 +490,11 @@ class WalletsView(APIView):
 
     def get(self, request: AuthenticatedRequest) -> Response:
         """List the organization's wallets."""
+        if not erp_configured():
+            return Response(
+                data={"message": "No wallets found"}, status=HTTP_204_NO_CONTENT
+            )
+
         org = request.user.organisation
         branch_id = request.META.get("HTTP_X_BRANCH") or request.META.get("X-Branch")
         balances = utils.get_wallet_balances(org, branch_id)

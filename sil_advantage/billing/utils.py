@@ -15,7 +15,7 @@ from sil_advantage.billing.models import (
     Refund,
     RefundLine,
 )
-from sil_advantage.common.api_clients.erp import get_erp_client
+from sil_advantage.common.api_clients.erp import erp_configured, get_erp_client
 from sil_advantage.common.cache import cached
 from sil_advantage.common.models import Organisation
 from sil_advantage.common.types import AuthenticatedRequest
@@ -28,6 +28,9 @@ LOGGER = logging.getLogger(__file__)
 @cached(ttl=600)
 def get_wallet_balances(org: Organisation, branch_id: Optional[str] = None) -> dict:
     """Get wallet balances."""
+    if not erp_configured():
+        return {}
+
     erp = get_erp_client(None)
     filters = {
         "_identifiers": "bulk_sms_account",

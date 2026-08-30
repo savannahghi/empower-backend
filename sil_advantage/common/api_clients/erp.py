@@ -8,6 +8,15 @@ from sil_erp_client import ERP
 from sil_advantage.common.cache import cached
 
 
+def erp_configured() -> bool:
+    """Report whether an ERP host is configured.
+
+    The ERP is a separate deployment. Callers that only enrich a response should
+    skip it when absent rather than fail the request.
+    """
+    return bool(settings.ERP_API_CONFIG.get("api_host"))
+
+
 def get_erp_client(workstation_id: Optional[UUID]) -> ERP:
     """Get ERP client and set the necessary headers."""
     config = {**settings.ERP_API_CONFIG}
