@@ -91,7 +91,7 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     install_requires=[
-        "django==4.2.1",
+        "django==5.2.16",
         "django-cors-headers==4.2.0",
         "django-extensions==3.2.3",
         "django-filter==23.2",
