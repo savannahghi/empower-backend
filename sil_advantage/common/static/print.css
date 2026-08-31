@@ -1,0 +1,399 @@
+/*Page structure*/
+@page {
+  size: A4 portrait;
+  margin: 0.2em 2.3em 1em 2em;
+  width: 100%;
+  @bottom-right {
+    font-size: 80%;
+    content: "Page " counter(page) " of " counter(pages);
+  }
+  @bottom-left {
+    font-size: 70%;
+    content: "Slade360 Advantage";
+  }
+}
+html,
+body {
+  font-family: "Montserrat", sans-serif;
+  -weasy-hyphens: auto;
+}
+
+body {
+  text-align: justify;
+  padding: 0 !important;
+  background: none !important;
+  width: 100%;
+  font-size: 14px;
+}
+
+hr.navbar {
+  display: none;
+}
+h1 {
+  page-break-before: auto !important;
+  -weasy-bookmark-level: none;
+  margin-top: 0 !important;
+}
+
+.top-right {
+  margin-top: 9px;
+  float: right;
+  text-align: right;
+  font-size: 0.5em;
+}
+
+.top-left {
+  float: left;
+}
+
+.top-area {
+  height: 60pt;
+}
+
+#logo {
+  height: 60pt;
+}
+
+.document-title {
+  margin-top: 10pt;
+}
+
+.document-title-text {
+  top: -5px;
+  padding-left: 0.5pt;
+  padding-bottom: 5pt;
+  font-size: 14pt;
+}
+
+.document-title-text > .divider {
+  font-size: 20pt;
+  margin: 0 5pt 0 5pt;
+  top: 2pt;
+  position: relative;
+}
+
+.document-header {
+  display: block;
+  margin-top: 5pt;
+  margin-right: auto;
+  margin-left: auto;
+}
+.col-1-1 {
+  min-height: 1px;
+  width: 100%;
+  float: left;
+}
+.col-1-1-right {
+  width: 100%;
+  float: right;
+}
+.col-1-2 {
+  width: 50%;
+  float: left;
+}
+.col-1-2-left {
+  width: 50%;
+  float: left;
+}
+.col-1-2-right {
+  width: 50%;
+  float: right;
+}
+.col-1-3 {
+  width: 33%;
+  float: left;
+}
+.col-1-3-left {
+  width: 65%;
+  float: left;
+}
+.col-1-3-right {
+  width: 35%;
+  float: right;
+}
+.col-1-4 {
+  width: 25%;
+  float: left;
+}
+.col-2-3 {
+  width: 66%;
+  float: left;
+}
+.col-7-10 {
+  width: 70%;
+  float: left;
+}
+.col-3-4 {
+  width: 75%;
+  float: left;
+}
+.document-header > .col-1-2 > .header-title {
+  max-width: 30px;
+}
+
+.document-header > .col-1-2 > .header-value {
+  font-weight: 500;
+}
+
+.fw-black{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+}
+
+.fw-semibold{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+}
+
+.fw-regular{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+}
+
+.fw-light{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 300;
+}
+
+.col-1-2-right {
+  width: 50%;
+  float: right;
+  text-align: right;
+}
+.comments {
+  margin-top: 70pt;
+  padding-top: 5pt;
+  font-size: 9pt;
+  height: 100pt;
+}
+.signatures {
+  padding-top: 15pt;
+  font-size: 9pt;
+  max-height: 40pt;
+}
+.signature::after {
+  color: transparent;
+  content: "ds";
+}
+.signature {
+  display: block;
+  padding: 15pt 0 5pt 0;
+  width: 250px;
+  border-bottom: 1px solid #3e3e3e;
+}
+.message {
+  font-size: 9pt;
+  margin-bottom: 10pt;
+}
+
+.terms {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin-top: 5pt;
+  font-size: 8.5pt;
+  font-style: italic;
+}
+
+.text-muted{
+  color:  #626262;
+}
+
+/*table styling*/
+.table-area {
+  display: block;
+  width: 100%;
+}
+.table-title {
+  width: 100%;
+  font-size: 10pt;
+  font-weight: bold;
+  margin-bottom: 5pt;
+}
+table {
+  border-collapse: collapse;
+}
+.numbered-table {
+  counter-reset: rowNumber;
+  counter-increment: rowNumber;
+}
+
+.numbered-table tr:not(:first-child) {
+  counter-increment: rowNumber;
+}
+.numbered-table tr.numbered_tr td:first-child::before {
+  content: counter(rowNumber) ".";
+  min-width: 1em;
+  margin-right: 0.5em;
+}
+
+/* table css */
+
+.invoice {
+  display: block;
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+.invoice-lines {
+  margin-top: 20px;
+  position: relative;
+  display: block;
+}
+
+.invoice-totals {
+  min-height: 1px;
+  width: 100%;
+  margin-bottom: 10em;
+  position: relative;
+  display: block;
+}
+
+
+table {
+  border: 1px solid #f3f3f3;
+  border-collapse: collapse;
+  font-size: 11pt;
+}
+
+thead > tr {
+  border-bottom: 1px solid #f3f3f3;
+}
+
+tfoot > tr {
+  border-top: 1px solid #f3f3f3;
+}
+
+th {
+  padding: 8px;
+  background-color: #f3f3f3;
+  color: #797979;
+}
+td {
+  padding: 8px;
+}
+
+/* end of table css */
+
+.long-td {
+  width: 25%;
+}
+
+.table-quantity {
+  text-align: right;
+  padding-right: 30px;
+}
+
+.total-quantity-header {
+  text-align: right;
+  padding-right: 20px;
+}
+
+.full-width-table {
+  width: 100%;
+  line-height: 150%;
+  font-size: 90%;
+}
+.half-width-table {
+  width: 50%;
+  line-height: 150%;
+  font-size: 90%;
+}
+.section-title {
+  font-size: medium;
+  font-weight: 400;
+  padding-top: 30pt;
+  padding-bottom: 5pt;
+}
+
+.section-title.no-padding {
+  padding-top: 5pt;
+}
+
+.clear-div {
+  content: "";
+  display: block;
+  clear: both;
+}
+.blank-space-separator {
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+}
+.bold-tr {
+  font-weight: bold;
+}
+.maths-underline {
+  text-decoration: none;
+  border-bottom: 0.3pt solid black;
+}
+.border-top {
+  text-decoration: none;
+  border-top: 0.5pt solid black;
+  padding-top: 5pt;
+}
+.double-underline {
+  border-bottom: 0.3pt double;
+}
+/*helper classes*/
+.pull-left {
+  float: left;
+}
+.pull-right {
+  float: right;
+}
+.pad-v-10 {
+  padding: 15pt 0 15pt 0;
+}
+
+.summary-tr {
+  border-right: 1px solid #cfcfcf;
+}
+
+.prod-name {
+  border-right: 1px solid #cfcfcf;
+  border-left: 1px solid #cfcfcf;
+}
+
+.f-s-one-m {
+  font-size: 1.4em;
+}
+
+.document-header-details {
+  margin-top: 2px;
+  font-size: 10pt;
+}
+
+.sub-header {
+  font-weight: 500;
+}
+
+.terms-header {
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+/* Utility classes */
+.mb-10{
+  margin-bottom: 10px;
+}
+
+.mb-15{
+  margin-bottom: 15px;
+}
+
+.mb-20{
+  margin-bottom: 20px;
+}
+
+.mt-10{
+  margin-top: 10px;
+}
+
+.mt-15{
+  margin-top: 15px;
+}
+
+.mt-20{
+  margin-top: 20px;
+}

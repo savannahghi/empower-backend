@@ -1,0 +1,9 @@
+Dear {{first_name}},
+
+You recently request for your email to be changed from {{old_email}} to {{new_email}}.
+To continue using Slade360&deg; you will now be required to login using the new email address({{new_email}})
+
+If you did not make this change or you believe an unauthorized person has accessed your account, you should contact your system administrator immediately.
+
+
+{{organisation_name}}

@@ -1,0 +1,136 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+# sil_advantage/__init__.py is committed in the open release - CI used to
+# generate it, which left the tag unimportable from a clean clone.
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+coverage
+junitxml_report
+.testmondata*
+**pytest_cache**
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# PyBuilder
+target/
+
+# IDEs
+.idea/
+*/db.sqlite3
+
+# dependencies
+/node_modules
+
+# clonedigger
+clonedigger.html
+
+.tox/*
+
+# Do not store vagrant runtime stuff in git
+*.vagrant*
+.vagrant/
+
+# Don't track uploads in git
+*media*
+uploads/
+
+# env files store config stuff
+.env
+env.sh
+*.env
+
+# IPython notebooks, used to experiment on stuff
+*.ipynb
+
+# Temp file
+sil_advantage/static/*
+*.sql
+
+# Mac
+.DS_Store
+.DS_Store
+
+# Profiler output
+profile
+profiling/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# ignore junitxml_report contents
+junitxml_report/
+
+# vim
+*.swp
+
+# ctags
+.tags*
+
+# profiling output
+prof/
+
+# eggs and other packaging detritus
+env.sh.bak
+tags
+
+# Mypy
+*.mypy_cache/
+
+# Virtual environment
+venv/
+.venv/*
+
+# vscode config file
+.vscode/
+
+# pyenv
+.python-version
+
+# Documentation
+docs/_build/
+
+.mise.toml

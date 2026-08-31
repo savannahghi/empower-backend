@@ -1,0 +1,7 @@
+Dear {{first_name}},
+
+Your email address has been changed to {{new_email}} on {% now "F j, Y" %} at {% now "h:i A (e)" %}.
+
+If you did not make this change or you believe an unauthorized person has accessed your account, you should contact your system administrator immediately.
+
+{{organisation_name}}

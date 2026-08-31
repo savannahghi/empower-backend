@@ -1,0 +1,165 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-21 14:34+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: sil_advantage/billing/models.py:427
+msgid "A billable item must be linked to a clinical order and/or an invoice."
+msgstr ""
+
+#: sil_advantage/billing/views.py:208
+msgid "The payment is not part of this invoice."
+msgstr ""
+
+#: sil_advantage/billing/views.py:236
+msgid "Kindly ensure the invoice is processed."
+msgstr ""
+
+#: sil_advantage/billing/views.py:240
+msgid "This invoice has an applied refund to it."
+msgstr ""
+
+#: sil_advantage/common/models/base.py:76
+msgid " "
+msgstr ""
+
+#: sil_advantage/common/models/common_models.py:162
+msgid "Date of birth cannot be a future date"
+msgstr ""
+
+#: sil_advantage/common/models/common_models.py:173
+msgid "A person cannot be more than 150 years old."
+msgstr ""
+
+#: sil_advantage/common/models/common_models.py:256
+#, python-brace-format
+msgid ""
+"Your image has a {axis} of {actual_size} {extra_text} pixels which is larger "
+"than allowable dimension of {expected_size} pixels."
+msgstr ""
+
+#: sil_advantage/common/models/common_models.py:270
+msgid "and width of {}"
+msgstr ""
+
+#: sil_advantage/common/models/common_models.py:377
+msgid "Enter a valid phone number."
+msgstr "Saisissez un numéro de téléphone valide"
+
+#: sil_advantage/common/models/common_models.py:450
+msgid "The timing end must be greater than its start."
+msgstr ""
+
+#: sil_advantage/common/serializers/base.py:34
+msgid "Ensure the organisation provided exists."
+msgstr ""
+
+#: sil_advantage/common/serializers/base.py:108
+msgid ""
+"Please provide the following headers: X-Branch, X-Department, & X-"
+"Workstation."
+msgstr ""
+
+#: sil_advantage/common/serializers/base.py:133
+msgid "You are not allowed to pass object with an id"
+msgstr ""
+
+#: sil_advantage/config/settings.py:330
+msgid "English"
+msgstr ""
+
+#: sil_advantage/config/settings.py:331
+msgid "French"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:100
+msgid "Slot size for a facility must set to a day in minutes"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:103
+msgid "Slot size must be a divisor of 60"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:198
+msgid "Slot start date must be greater than current time"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:206
+msgid "Slot end date must be greater than current time"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:215
+msgid "End date must be greater than start date"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:224
+msgid "Slot period must 5 min or more"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:349
+msgid "Start date must be greater than current time"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:359
+msgid ""
+"Appointment end date must be greater                            than current "
+"time"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:379
+msgid ""
+"Appointment start date must fall within                                "
+"selected slot duration"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:391
+msgid ""
+"Appointment end date must fall within                                "
+"selected slot duration"
+msgstr ""
+
+#: sil_advantage/scheduling/models.py:402
+msgid "Slot is already booked."
+msgstr ""
+
+#: sil_advantage/scheduling/views.py:100
+msgid "Availability on {calendar.day_name[int(day)]} overlaps."
+msgstr ""
+
+#: sil_advantage/scheduling/views.py:225
+msgid "Please provide a date."
+msgstr ""
+
+#: sil_advantage/settings/manager.py:35
+msgid "Preference validation failed."
+msgstr ""
+
+#: sil_advantage/sil_auth/pipeline.py:43
+msgid "This field is required to create a user."
+msgstr ""
+
+#: sil_advantage/visits/models.py:243
+#, python-format
+msgid ""
+"Please close the patient's %(n_open_visits)s open visit(s) before opening a "
+"new one."
+msgstr ""
+
+#: sil_advantage/visits/models.py:251
+msgid "The visit end must be greater than its start."
+msgstr ""

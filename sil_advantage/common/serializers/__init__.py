@@ -1,0 +1,58 @@
+"""Shared serializer module."""
+from .base import (
+    AuditFieldsMixin,
+    BaseSerializer,
+    DynamicFieldsModelSerializerMixin,
+    WritabledNestedBaseSerializer,
+    get_organisation,
+)
+from .common_serializers import (
+    AttachmentSerializer,
+    ConsentSerializer,
+    ConsentTransitionLogSerializer,
+    LinkPersonSerializer,
+    OperatingRegionSerializer,
+    OrganisationSerializer,
+    OrgTransitionLogSerializer,
+    OTPVerificationSerializer,
+    PersonAttachmentSerializer,
+    PersonContactSerializer,
+    PersonIDSerializer,
+    PersonSerializer,
+    PractitionerSerializer,
+    RelatedPersonSerializer,
+    UserProfileSerializer,
+)
+from .onboarding import (
+    FacilityRegistrationSerializer,
+    OrganisationOnboardingSerializer,
+    ProviderInputSerializer,
+    RegistrationSerializer,
+)
+
+__all__ = [
+    "AttachmentSerializer",
+    "FacilityRegistrationSerializer",
+    "AuditFieldsMixin",
+    "BaseSerializer",
+    "get_organisation",
+    "LinkPersonSerializer",
+    "OrganisationSerializer",
+    "OrganisationOnboardingSerializer",
+    "OrgTransitionLogSerializer",
+    "PersonAttachmentSerializer",
+    "PersonContactSerializer",
+    "PersonIDSerializer",
+    "PersonSerializer",
+    "PractitionerSerializer",
+    "ProviderInputSerializer",
+    "RelatedPersonSerializer",
+    "ConsentSerializer",
+    "UserProfileSerializer",
+    "WritabledNestedBaseSerializer",
+    "RegistrationSerializer",
+    "DynamicFieldsModelSerializerMixin",
+    "OTPVerificationSerializer",
+    "ConsentTransitionLogSerializer",
+    "OperatingRegionSerializer",
+]

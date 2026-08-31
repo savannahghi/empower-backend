@@ -1,0 +1,15 @@
+Hello {{first_name}},
+
+A new account has been created using your e-mail on the HealthCloud.
+Use the following details to login in to your HealthCloud account.
+
+Username: {{email}}
+Password: {{password}}
+
+Click on the link below to login to HealthCloud.
+{{frontend_url}}
+
+You will be required to set a new password when you first login.
+
+Thanks.
+Savannah Informatics Limited.

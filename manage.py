@@ -1,0 +1,1 @@
+bin/advantage_manage
