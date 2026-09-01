@@ -98,7 +98,7 @@ setup(
         "django-phonenumber-field==7.1.0",
         "django-ses==3.5.0",
         "django-storages[google]==1.13.2",
-        "djangorestframework==3.14.0",
+        "djangorestframework==3.17.2",
         "drf-writable-nested==0.7.0",
         "django_compression_middleware==0.5.0",
         "drf_orjson_renderer==1.7.1",
