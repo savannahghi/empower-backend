@@ -113,7 +113,7 @@ setup(
         "celery==5.3.1",
         "django-celery-beat==2.5.0",
         "cryptography==41.0.3",
-        "weasyprint==58.1",
+        "weasyprint==70.0",
         "whitenoise==6.5.0",
         "sentry_sdk==1.29.2",
         "xlrd==1.2.0",
